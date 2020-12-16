@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.worldgdpjar.dao.CountryDao">
+    <select id="getContinents" resultType="java.lang.String">
+        SELECT DISTINCT Continent 
+        FROM country
+        ORDER BY Continent
+    </select>
+    <select id="getRegions" resultType="java.lang.String">
+        SELECT DISTINCT Region from country ORDER BY Region
+    </select>
+    <select id="getHeadOfStates" resultType="java.lang.String">
+        SELECT DISTINCT HeadOfState FROM country ORDER BY HeadOfState
+    </select>
+    
+    <select id="getGovernmentTypes" resultType="java.lang.String">
+        SELECT DISTINCT GovernmentForm from country ORDER BY GovernmentForm
+    </select>
+
+</mapper>

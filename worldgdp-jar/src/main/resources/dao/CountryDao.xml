@@ -2,21 +2,112 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.worldgdpjar.dao.CountryDao">
+<mapper namespace="com.example.worldgdpjar.dao.CountryDAO">
+    <resultMap id="countryDetailsMap" type="com.example.worldgdpjar.model.Country" autoMapping="true">
+        <id column="Code" property="code"/>
+        <association property="capital" columnPrefix="capital_" autoMapping="true"
+                     javaType="com.example.worldgdpjar.model.City">
+            <id column="id" property="id"/>
+        </association>
+    </resultMap>
     <select id="getContinents" resultType="java.lang.String">
-        SELECT DISTINCT Continent 
+        SELECT DISTINCT Continent
         FROM country
         ORDER BY Continent
     </select>
     <select id="getRegions" resultType="java.lang.String">
-        SELECT DISTINCT Region from country ORDER BY Region
-    </select>
-    <select id="getHeadOfStates" resultType="java.lang.String">
-        SELECT DISTINCT HeadOfState FROM country ORDER BY HeadOfState
-    </select>
-    
-    <select id="getGovernmentTypes" resultType="java.lang.String">
-        SELECT DISTINCT GovernmentForm from country ORDER BY GovernmentForm
+        SELECT DISTINCT Region
+        from country
+        ORDER BY Region
     </select>
 
+    <select id="getHeadOfStates" resultType="java.lang.String">
+        SELECT DISTINCT HeadOfState
+        FROM country
+        ORDER BY HeadOfState
+    </select>
+
+    <select id="getGovernmentTypes" resultType="java.lang.String">
+        SELECT DISTINCT GovernmentForm
+        from country
+        ORDER BY GovernmentForm
+    </select>
+
+    <select id="getCountries" resultMap="countryDetailsMap">
+        SELECT c.Code,
+        c.Name,
+        c.Continent,
+        c.region,
+        c.SurfaceArea surface_area,
+        c.IndepYear indep_year,
+        c.Population,
+        c.LifeExpectancy life_expectancy,
+        c.GNP,
+        c.LocalName local_name,
+        c.GovernmentForm government_form,
+        c.HeadOfState head_of_state,
+        c.code2,
+        c.capital,
+        cy.name capital_name,
+        cy.ID capital_id,
+        cy.District capital_district,
+        cy.CountryCode capital_country_code,
+        cy.Name capital_name,
+        cy.Population AS capital_population
+        FROM country c
+        LEFT OUTER JOIN city cy ON cy.id = c.capital
+        <where>
+            <if test="search != null">
+                AND ( LOWER(c.name) LIKE CONCAT('%', LOWER(#{search}), '%') )
+            </if>
+            <if test="continent != null">
+                AND (c.Continent = #{continent})
+            </if>
+            <if test="region != null">
+                AND (c.Region = #{region})
+            </if>
+        </where>
+        ORDER BY c.Code LIMIT #{offset}, #{size}
+    </select>
+    <!--    <select id="getCountryDetails" resultType="com.example.worldgdpjar.model.Country">-->
+    <select id="getCountryDetails" resultMap="countryDetailsMap">
+        SELECT c.Code,
+               c.Name,
+               c.Continent,
+               c.region,
+               c.SurfaceArea    surface_area,
+               c.IndepYear      indep_year,
+               c.Population,
+               c.LifeExpectancy life_expectancy,
+               c.GNP,
+               c.LocalName      local_name,
+               c.GovernmentForm government_form,
+               c.HeadOfState    head_of_state,
+               c.code2,
+               c.capital,
+               cy.name          capital_name,
+               cy.ID            capital_id,
+               cy.District      capital_district,
+               cy.CountryCode   capital_country_code,
+               cy.Name          capital_name,
+               cy.Population AS capital_population
+        FROM country c
+                 LEFT OUTER JOIN city cy ON cy.id = c.capital
+        WHERE c.Code = #{code}
+    </select>
+
+    <select id="getCountriesCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM country
+        <where>
+            <if test="search != null">
+                AND ( LOWER(c.name) LIKE CONCAT('%', LOWER(#{search}), '%') )
+            </if>
+            <if test="continent != null">
+                AND (c.Continent = #{continent})
+            </if>
+            <if test="region != null">
+                AND (c.Region = #{region})
+            </if>
+        </where>
+    </select>
 </mapper>
